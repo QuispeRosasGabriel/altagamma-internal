@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -192,10 +192,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  handleRemove: () => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
+  const { numSelected, handleRemove } = props;
 
   return (
     <Toolbar
@@ -232,7 +233,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={() => handleRemove()}>
             <DeleteIcon sx={{ color: "#fff" }} />
           </IconButton>
         </Tooltip>
@@ -247,16 +248,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export const EnhancedTable = () => {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof IVehicle>("brand");
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<keyof IVehicle>("brand");
+  const [selected, setSelected] = useState<readonly number[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const carsDataFromStorage = JSON.parse(
     localStorage.getItem("CARS_LIST") ?? "{}"
   );
-
-  console.log({ carsDataFromStorage });
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -313,7 +312,7 @@ export const EnhancedTable = () => {
       ? Math.max(0, (1 + page) * rowsPerPage - carsDataFromStorage.length)
       : 0;
 
-  const visibleRows = React.useMemo(
+  const visibleRows = useMemo(
     () =>
       stableSort(
         carsDataFromStorage as any,
@@ -322,10 +321,24 @@ export const EnhancedTable = () => {
     [order, orderBy, page, rowsPerPage]
   );
 
+  const [carsListData, setCarsListData] = useState(visibleRows);
+
+  const handleRemove = () => {
+    const filteredData = [...carsListData].filter(
+      (item) => !selected.includes(Number(item.id))
+    );
+
+    setCarsListData(filteredData);
+    localStorage.setItem("CARS_LIST", JSON.stringify(filteredData));
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          handleRemove={handleRemove}
+        />
         <TableContainer>
           <Table
             sx={{
@@ -343,15 +356,8 @@ export const EnhancedTable = () => {
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
-            <TableBody
-              sx={
-                {
-                  // px: 2,
-                  // border: "1px solid #FF472F",
-                }
-              }
-            >
-              {visibleRows.map((row, index) => {
+            <TableBody sx={{}}>
+              {carsListData.map((row, index) => {
                 const isItemSelected = isSelected(Number(row.id));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -462,6 +468,7 @@ export const EnhancedTable = () => {
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
+          labelRowsPerPage={"Resultados Por Pagina"}
           sx={{
             background: "#000",
             color: "#fff",

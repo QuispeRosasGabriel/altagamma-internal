@@ -1,6 +1,5 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { CustomInput, EnhancedTable } from "../components";
-import { VehicleDataContext } from "../context";
 
 export const VehicleSearch = () => {
   return (

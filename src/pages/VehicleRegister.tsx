@@ -306,6 +306,7 @@ export const VehicleRegister = () => {
             <CustomInput
               label="Precio"
               id={priceRef}
+              type="number"
               onChange={(ev) =>
                 setRegisterForm({
                   ...registerForm,
