@@ -4,6 +4,16 @@ export interface Brand {
   value: string;
 }
 
+export const brandConversor = (value: string) => {
+  const brand = BrandsList.find((item) => item.value === value);
+  if (brand) {
+    return brand.name
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+  return null;
+};
+
 export const BrandsList: Brand[] = [
   {
     id: 1,

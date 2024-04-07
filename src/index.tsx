@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CommandCenter, Login, VehicleRegister } from "./pages";
 import "./index.css";
 import { VehicleSearch } from "./pages/VehicleSearch";
+import { VehicleDataProvider } from "./context";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <VehicleDataProvider>
+      <RouterProvider router={router} />
+    </VehicleDataProvider>
   </React.StrictMode>
 );
 

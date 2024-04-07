@@ -4,9 +4,14 @@ import React from "react";
 interface ActionButtonsProps {
   onClean: () => void;
   onSave: () => void;
+  disabledSave?: boolean;
 }
 
-export const ActionButtons = ({ onClean, onSave }: ActionButtonsProps) => {
+export const ActionButtons = ({
+  onClean,
+  onSave,
+  disabledSave,
+}: ActionButtonsProps) => {
   return (
     <Box
       display="flex"
@@ -44,6 +49,10 @@ export const ActionButtons = ({ onClean, onSave }: ActionButtonsProps) => {
             backgroundColor: "#FF472F",
             transform: "scale(1.1)",
           },
+          "&:disabled": {
+            backgroundColor: "#FF472F",
+            color: "#fff",
+          },
           "&:focus": {
             borderColor: "#FF472F",
             transform: "scale(1.1)",
@@ -53,6 +62,7 @@ export const ActionButtons = ({ onClean, onSave }: ActionButtonsProps) => {
           },
         }}
         onClick={() => onSave()}
+        disabled={disabledSave}
       >
         Guardar
       </Button>

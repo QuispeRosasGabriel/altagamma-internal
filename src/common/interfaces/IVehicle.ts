@@ -1,10 +1,11 @@
 import { Dayjs } from "dayjs";
 
 export interface IVehicle {
-  brand?: string;
-  model?: string;
-  price?: string;
-  km?: string;
-  year?: Dayjs;
-  concession?: string;
+  id: number;
+  brand: string;
+  model: string;
+  price: number | null;
+  km: number | null;
+  year: Dayjs;
+  concession: string;
 }

@@ -5,7 +5,8 @@ import {
   InputProps,
   Box,
 } from "@mui/material";
-import { Help, Loop, LoopOutlined, HourglassBottom } from "@mui/icons-material";
+import { Help, HourglassBottom } from "@mui/icons-material";
+import { Ref } from "react";
 
 interface CustomInputProps extends InputProps {
   label: string;
@@ -29,6 +30,8 @@ export const CustomInput = ({
   name,
   value,
   isLoading = false,
+  type,
+  id,
 }: CustomInputProps) => {
   return (
     <>
@@ -37,7 +40,10 @@ export const CustomInput = ({
         onChange={(ev) => onChange(ev)}
         name={name}
         value={value}
+        type={type}
         disabled={disabled}
+        autoComplete="off"
+        id={id}
         sx={{
           width: "100%",
           color: "#fff",
@@ -46,6 +52,7 @@ export const CustomInput = ({
           },
           "& .MuiFormLabel-root.Mui-focused": {
             color: "#FF472F",
+            background: "#000",
           },
           "& .MuiFormLabel-root.Mui-hover": {
             color: "#FF472F",
@@ -70,6 +77,9 @@ export const CustomInput = ({
           },
         }}
         InputProps={{
+          inputProps: {
+            inputMode: "numeric", // Set input mode to 'numeric' to hide number arrows
+          },
           endAdornment: showIcon && (
             <InputAdornment position="end">
               <Tooltip title={"Ver sugerencias de precio"} placement="top">

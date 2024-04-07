@@ -1,5 +1,4 @@
 import * as React from "react";
-import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,54 +11,42 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-
-interface Data {
-  id: number;
-  calories: number;
-  carbs: number;
-  fat: number;
-  name: string;
-  protein: number;
-}
+import { IVehicle } from "../common";
+import { brandConversor } from "../mocks";
 
 function createData(
   id: number,
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-): Data {
+  brand: string,
+  model: string,
+  km: number | null,
+  price: number | null,
+  year: number,
+  concession: string
+): Omit<IVehicle, "year"> & {
+  year: number;
+} {
   return {
     id,
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    brand,
+    model,
+    km,
+    price,
+    year,
+    concession,
   };
 }
 
 const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67, 4.3),
-  createData(2, "Donut", 452, 25.0, 51, 4.9),
-  createData(3, "Eclair", 262, 16.0, 24, 6.0),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData(5, "Gingerbread", 356, 16.0, 49, 3.9),
-  createData(6, "Honeycomb", 408, 3.2, 87, 6.5),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData(8, "Jelly Bean", 375, 0.0, 94, 0.0),
-  createData(9, "KitKat", 518, 26.0, 65, 7.0),
-  createData(10, "Lollipop", 392, 0.2, 98, 0.0),
-  createData(11, "Marshmallow", 318, 0, 81, 2.0),
-  createData(12, "Nougat", 360, 19.0, 9, 37.0),
-  createData(13, "Oreo", 437, 18.0, 63, 4.0),
+  createData(1, "Bmw", "X1", 12000, 30000, 2020, "Si"),
+  createData(2, "Bmw", "X2", 14000, 34000, 2021, "No"),
+  createData(3, "Bmw", "X3", 13000, 32000, 2022, "No"),
+  createData(4, "Bmw", "X2", 11000, 31000, 2020, "No"),
+  createData(5, "Mercedes", "CLA", 10000, 36000, 2024, "No"),
 ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -86,10 +73,6 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort<T>(
   array: readonly T[],
   comparator: (a: T, b: T) => number
@@ -107,41 +90,47 @@ function stableSort<T>(
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof IVehicle;
   label: string;
   numeric: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
   {
-    id: "name",
+    id: "brand",
+    numeric: false,
+    disablePadding: false,
+    label: "Marca",
+  },
+  {
+    id: "model",
     numeric: false,
     disablePadding: true,
     label: "Modelo",
   },
   {
-    id: "calories",
-    numeric: true,
-    disablePadding: false,
-    label: "Marca",
-  },
-  {
-    id: "fat",
+    id: "price",
     numeric: true,
     disablePadding: false,
     label: "Precio",
   },
   {
-    id: "carbs",
+    id: "km",
     numeric: true,
     disablePadding: false,
     label: "Kilometraje",
   },
   {
-    id: "protein",
+    id: "year",
     numeric: true,
     disablePadding: false,
-    label: "Protein (g)",
+    label: "Año",
+  },
+  {
+    id: "concession",
+    numeric: false,
+    disablePadding: false,
+    label: "Concesion",
   },
 ];
 
@@ -149,7 +138,7 @@ interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof IVehicle
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -158,58 +147,34 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof IVehicle) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
   return (
     <TableHead>
       <TableRow>
-        {/* <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all desserts",
-            }}
-            sx={{
-              color: "#FF472F", // Default color, applies when not checked
-              "&.Mui-checked": {
-                color: "#FF472F", // Color when checked
-              },
-              "&.MuiCheckbox-indeterminate": {
-                color: "#FF472F", // Color when indeterminate
-              },
-              "& .MuiSvgIcon-root": {
-                // This targets the check icon specifically
-                color: "#FF472F", // Ensures the check icon matches your theme color
-              },
-            }}
-          />
-        </TableCell> */}
-        {headCells.map((headCell) => (
+        {headCells.map((headCell, idx) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align={idx === 0 ? "left" : "right"}
             padding={headCell.disablePadding ? "none" : "normal"}
-            sx={{ color: "#000" }}
+            style={{ color: "#fff" }}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
-              sx={{ color: "#000" }}
+              style={{ color: "#fff" }}
+              sx={{
+                color: "#fff",
+                "&:hover": {
+                  color: "#fff",
+                },
+              }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -234,17 +199,15 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   return (
     <Toolbar
+      style={{
+        borderBottom: "1px solid #fff",
+      }}
       sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
+        background: "#000",
+        padding: 0,
         ...(numSelected > 0 && {
           background: "#000",
           color: "#fff",
-          // bgcolor: (theme) =>
-          //   alpha(
-          //     theme.palette.primary.main,
-          //     theme.palette.action.activatedOpacity
-          //   ),
         }),
       }}
     >
@@ -255,11 +218,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} seleccionado(s)
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: "1 1 100%" }}
+          sx={{ flex: "1 1 100%", color: "#fff" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -276,7 +239,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       ) : (
         <Tooltip title="Filter list">
           <IconButton>
-            <FilterListIcon sx={{ color: "#000" }} />
+            <FilterListIcon sx={{ color: "#fff" }} />
           </IconButton>
         </Tooltip>
       )}
@@ -285,15 +248,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export const EnhancedTable = () => {
   const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("calories");
+  const [orderBy, setOrderBy] = React.useState<keyof IVehicle>("brand");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const carsDataFromStorage = JSON.parse(
+    localStorage.getItem("CARS_LIST") ?? "{}"
+  );
+
+  console.log({ carsDataFromStorage });
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof IVehicle
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -302,7 +269,7 @@ export const EnhancedTable = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = rows.map((n) => Number(n.id));
       setSelected(newSelected);
       return;
     }
@@ -339,22 +306,19 @@ export const EnhancedTable = () => {
     setPage(0);
   };
 
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - carsDataFromStorage.length)
+      : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
+      stableSort(
+        carsDataFromStorage as any,
+        getComparator(order, orderBy)
+      ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage]
   );
 
@@ -366,10 +330,10 @@ export const EnhancedTable = () => {
           <Table
             sx={{
               minWidth: 750,
-              backgroundColor: "#fff",
+              backgroundColor: "#000",
             }}
             aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
+            size={"medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -380,18 +344,21 @@ export const EnhancedTable = () => {
               rowCount={rows.length}
             />
             <TableBody
-              sx={{
-                border: "1px solid #FF472F",
-              }}
+              sx={
+                {
+                  // px: 2,
+                  // border: "1px solid #FF472F",
+                }
+              }
             >
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id);
+                const isItemSelected = isSelected(Number(row.id));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.id)}
+                    onClick={(event) => handleClick(event, Number(row.id))}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -408,44 +375,14 @@ export const EnhancedTable = () => {
                         },
                       },
                       "&.Mui-selected": {
-                        backgroundColor: "#FF472F", // Change background color when selected
+                        backgroundColor: "#FF472F",
                         ".MuiTableCell-root": {
                           borderColor: "#FF472F",
                           color: "#fff",
                         },
                       },
-                      border: "1px solid #FF472F",
                     }}
                   >
-                    {/* <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          "aria-labelledby": labelId,
-                        }}
-                        sx={{
-                          color: "#FF472F", // Default color
-                          "&:hover": {
-                            color: "white", // Color on hover
-                          },
-                          "&.Mui-checked": {
-                            color: "#FF472F", // Color when checked
-                          },
-                          "&.MuiCheckbox-indeterminate": {
-                            color: "#FF472F", // Color when indeterminate
-                          },
-                          "& .MuiSvgIcon-root": {
-                            // This targets the check icon specifically
-                            color: "#FF472F", // Ensures the check icon matches your theme color
-                          },
-                          "&:hover .MuiSvgIcon-root": {
-                            // Change icon color on hover
-                            color: "white",
-                          },
-                        }}
-                      />
-                    </TableCell> */}
                     <TableCell
                       component="th"
                       id={labelId}
@@ -453,46 +390,57 @@ export const EnhancedTable = () => {
                       padding="none"
                       sx={{
                         cursor: "pointer",
-                        color: "#000",
+                        color: "#fff",
+                        padding: "0 16px",
                       }}
                     >
-                      {row.name}
+                      {brandConversor(row.brand as string)}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         cursor: "pointer",
-                        color: "#000",
+                        color: "#fff",
                       }}
                     >
-                      {row.calories}
+                      {row.model.toString().toUpperCase()}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         cursor: "pointer",
-                        color: "#000",
+                        color: "#fff",
                       }}
                     >
-                      {row.fat}
+                      ${row.price}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         cursor: "pointer",
-                        color: "#000",
+                        color: "#fff",
+                        textAlign: "right",
                       }}
                     >
-                      {row.carbs}
+                      {row.km}
                     </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         cursor: "pointer",
-                        color: "#000",
+                        color: "#fff",
                       }}
                     >
-                      {row.protein}
+                      {row.year.toString().split("-")[0]}
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        cursor: "pointer",
+                        color: "#fff",
+                      }}
+                    >
+                      {row.concession === "0" ? "Si" : "No"}
                     </TableCell>
                   </TableRow>
                 );
@@ -500,7 +448,7 @@ export const EnhancedTable = () => {
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height: 53 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -514,6 +462,22 @@ export const EnhancedTable = () => {
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
+          sx={{
+            background: "#000",
+            color: "#fff",
+            ".MuiTablePagination-displayedRows": {
+              // color: "red",
+            },
+            // ".MuiTablePagination-selectLabel": {
+            //   color: "green",
+            // },
+            // "& .MuiTablePagination-icon": {
+            //   color: "#fff",
+            // },
+            "& .MuiTablePagination-actions": {
+              color: "#fff",
+            },
+          }}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
@@ -522,10 +486,3 @@ export const EnhancedTable = () => {
     </Box>
   );
 };
-
-{
-  /* <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      /> */
-}
