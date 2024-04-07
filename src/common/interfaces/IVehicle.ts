@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 export interface IVehicle {
   brand?: string;
   model?: string;
-  price?: number;
+  price?: string;
   km?: string;
   year?: Dayjs;
   concession?: string;

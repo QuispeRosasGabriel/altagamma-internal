@@ -83,7 +83,7 @@ export const VehicleRegister = () => {
     let getSugerenciesMockList = [] as Array<{ value: string; id: number }>;
     if (registerForm.brand === "bmw") {
       getSugerenciesMockList = sugerenciesMockList.bmw;
-    } else if (registerForm.brand === "mercedes") {
+    } else if (registerForm.brand === "mercedes-benz") {
       getSugerenciesMockList = sugerenciesMockList.mercedes;
     } else if (registerForm.brand === "audi") {
       getSugerenciesMockList = sugerenciesMockList.audi;
@@ -266,7 +266,12 @@ export const VehicleRegister = () => {
                           color: "#ff6900",
                         },
                       }}
-                      onClick={() => {}}
+                      onClick={() =>
+                        setRegisterForm({
+                          ...registerForm,
+                          price: s.value,
+                        })
+                      }
                       key={s.id}
                     >
                       {s.value}
@@ -287,7 +292,7 @@ export const VehicleRegister = () => {
               km: "",
               model: "",
               year: dayjs(new Date().getFullYear().toString()),
-              price: 0,
+              price: "0",
             })
           }
           onSave={() => {}}
