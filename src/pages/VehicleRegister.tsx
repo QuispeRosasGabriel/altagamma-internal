@@ -250,10 +250,8 @@ export const VehicleRegister = () => {
               showIcon={
                 !!registerForm.brand &&
                 !!registerForm.year &&
-                !!registerForm.model &&
-                !!registerForm.km
+                !!registerForm.model
               }
-              disabled
               onIconClick={() => startWebScrappingRequest()}
             />
             {!!sugerencies.length && (
