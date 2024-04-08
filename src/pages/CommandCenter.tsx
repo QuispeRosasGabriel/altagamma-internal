@@ -8,34 +8,39 @@ import {
   AttachMoney,
 } from "@mui/icons-material";
 import logo from "../logo.png";
-
-const actions = [
-  {
-    name: "Registro",
-    path: "/register-vehicle",
-    icon: <AppRegistration />,
-  },
-  {
-    name: "Busqueda",
-    path: "/search-vehicle",
-    icon: <Search />,
-  },
-  {
-    name: "Balance Financiero",
-    path: "/finance-balance",
-    icon: <AttachMoney />,
-  },
-  {
-    name: "Ajustes",
-    path: "/settings",
-    icon: <Build />,
-  },
-];
+import { useIsAdmin } from "../hooks";
 
 export const CommandCenter = () => {
   const navigate = useNavigate();
-  const [value, setValue] = React.useState(0);
-  const isSmDown = useMediaQuery("(max-width:600px)");
+  const isAdmin = JSON.parse(localStorage.getItem("IS_ADMIN") ?? "false");
+
+  const baseActions = [
+    {
+      name: "Registro",
+      path: "/register-vehicle",
+      icon: <AppRegistration />,
+    },
+    {
+      name: "Balance Financiero",
+      path: "/finance-balance",
+      icon: <AttachMoney />,
+    },
+  ];
+
+  const adminActions = [
+    {
+      name: "Busqueda",
+      path: "/search-vehicle",
+      icon: <Search />,
+    },
+    {
+      name: "Ajustes",
+      path: "/settings",
+      icon: <Build />,
+    },
+  ];
+
+  const actions = isAdmin ? [...baseActions, ...adminActions] : baseActions;
 
   return (
     <>
