@@ -121,8 +121,21 @@ export const VehicleRegister = () => {
       const dataFromStorage =
         JSON.parse(localStorage.getItem("CARS_LIST") as any) ?? [];
       const updatedList = Array.isArray(dataFromStorage)
-        ? [...dataFromStorage, { ...registerForm, id: Date.now() }]
-        : [{ ...registerForm, id: Date.now() }];
+        ? [
+            ...dataFromStorage,
+            {
+              ...registerForm,
+              id: Date.now(),
+              price: registerForm.price,
+            },
+          ]
+        : [
+            {
+              ...registerForm,
+              id: Date.now(),
+              price: registerForm.price.toString().replaceAll("$", ""),
+            },
+          ];
       localStorage.setItem("CARS_LIST", JSON.stringify(updatedList));
       setRegistrationCompleted(true);
 
@@ -333,6 +346,7 @@ export const VehicleRegister = () => {
                         },
                       }}
                       onClick={() => {
+                        console.log(s.value.replaceAll("$", ""));
                         setRegisterForm({
                           ...registerForm,
                           price: s.value as any,

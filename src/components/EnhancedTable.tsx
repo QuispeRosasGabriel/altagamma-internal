@@ -401,7 +401,8 @@ export const EnhancedTable = ({
                           color: "#fff",
                         }}
                       >
-                        ${row.price}
+                        {row.price?.toString().includes("$") ? "" : "$"}
+                        {row.price}
                       </TableCell>
                       <TableCell
                         align="right"
