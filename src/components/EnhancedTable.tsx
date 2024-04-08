@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -136,11 +136,7 @@ const headCells: readonly HeadCell[] = [
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof IVehicle
-  ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRequestSort: (property: keyof IVehicle) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
@@ -150,7 +146,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: keyof IVehicle) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
+      onRequestSort(property);
     };
 
   return (
@@ -247,32 +243,32 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export const EnhancedTable = () => {
+
+interface TableProps {
+  carsListData: Array<IVehicle>;
+  setCarsListData: (v: Array<IVehicle>) => void;
+}
+
+export const EnhancedTable = ({
+  carsListData,
+  setCarsListData,
+}: TableProps) => {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IVehicle>("brand");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const carsDataFromStorage = JSON.parse(
-    localStorage.getItem("CARS_LIST") ?? "{}"
-  );
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof IVehicle
-  ) => {
+  const handleRequestSort = (property: keyof IVehicle) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n) => Number(n.id));
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
+    const data = stableSort(
+      carsListData as any,
+      getComparator(isAsc ? "desc" : "asc", property)
+    ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    setCarsListData(data as any);
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -308,20 +304,7 @@ export const EnhancedTable = () => {
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
   const emptyRows =
-    page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - carsDataFromStorage.length)
-      : 0;
-
-  const visibleRows = useMemo(
-    () =>
-      stableSort(
-        carsDataFromStorage as any,
-        getComparator(order, orderBy)
-      ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
-
-  const [carsListData, setCarsListData] = useState(visibleRows);
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - carsListData.length) : 0;
 
   const handleRemove = () => {
     const filteredData = [...carsListData].filter(
@@ -333,163 +316,164 @@ export const EnhancedTable = () => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar
-          numSelected={selected.length}
-          handleRemove={handleRemove}
-        />
-        <TableContainer>
-          <Table
-            sx={{
-              minWidth: 750,
-              backgroundColor: "#000",
-            }}
-            aria-labelledby="tableTitle"
-            size={"medium"}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody sx={{}}>
-              {carsListData.map((row, index) => {
-                const isItemSelected = isSelected(Number(row.id));
-                const labelId = `enhanced-table-checkbox-${index}`;
+    <>
+      <Box sx={{ width: "100%" }}>
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            handleRemove={handleRemove}
+          />
+          <TableContainer>
+            <Table
+              sx={{
+                minWidth: 750,
+                backgroundColor: "#000",
+              }}
+              aria-labelledby="tableTitle"
+              size={"medium"}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody sx={{}}>
+                {carsListData.map((row, index) => {
+                  const isItemSelected = isSelected(Number(row.id));
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, Number(row.id))}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "#FF472F",
+                          ".MuiTableCell-root": {
+                            borderColor: "#FF472F",
+                            background: "#FF472F",
+                            color: "#fff",
+                          },
+                        },
+                        "&.Mui-selected": {
+                          backgroundColor: "#FF472F",
+                          ".MuiTableCell-root": {
+                            borderColor: "#FF472F",
+                            color: "#fff",
+                          },
+                        },
+                      }}
+                    >
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                          padding: "0 16px",
+                        }}
+                      >
+                        {brandConversor(row.brand as string)}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                        }}
+                      >
+                        {row.model.toString().toUpperCase()}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                        }}
+                      >
+                        ${row.price}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                          textAlign: "right",
+                        }}
+                      >
+                        {row.km}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                        }}
+                      >
+                        {row.year.toString().split("-")[0]}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                        }}
+                      >
+                        {row.concession === "0" ? "Si" : "No"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
                   <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, Number(row.id))}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "#FF472F",
-                        ".MuiTableCell-root": {
-                          borderColor: "#FF472F",
-                          background: "#FF472F",
-                          color: "#fff",
-                        },
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "#FF472F",
-                        ".MuiTableCell-root": {
-                          borderColor: "#FF472F",
-                          color: "#fff",
-                        },
-                      },
+                    style={{
+                      height: 53 * emptyRows,
                     }}
                   >
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                        padding: "0 16px",
-                      }}
-                    >
-                      {brandConversor(row.brand as string)}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                      }}
-                    >
-                      {row.model.toString().toUpperCase()}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                      }}
-                    >
-                      ${row.price}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                        textAlign: "right",
-                      }}
-                    >
-                      {row.km}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                      }}
-                    >
-                      {row.year.toString().split("-")[0]}
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{
-                        cursor: "pointer",
-                        color: "#fff",
-                      }}
-                    >
-                      {row.concession === "0" ? "Si" : "No"}
-                    </TableCell>
+                    <TableCell colSpan={6} />
                   </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          labelRowsPerPage={"Resultados Por Pagina"}
-          sx={{
-            background: "#000",
-            color: "#fff",
-            ".MuiTablePagination-displayedRows": {
-              // color: "red",
-            },
-            // ".MuiTablePagination-selectLabel": {
-            //   color: "green",
-            // },
-            // "& .MuiTablePagination-icon": {
-            //   color: "#fff",
-            // },
-            "& .MuiTablePagination-actions": {
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            labelRowsPerPage={"Resultados Por Pagina"}
+            sx={{
+              background: "#000",
               color: "#fff",
-            },
-          }}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </Box>
+              ".MuiTablePagination-displayedRows": {
+                // color: "red",
+              },
+              // ".MuiTablePagination-selectLabel": {
+              //   color: "green",
+              // },
+              // "& .MuiTablePagination-icon": {
+              //   color: "#fff",
+              // },
+              "& .MuiTablePagination-actions": {
+                color: "#fff",
+              },
+            }}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </Box>
+    </>
   );
 };

@@ -1,9 +1,9 @@
-import { Alert, Box, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Alert, Box, Grid, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { ActionButtons, CustomInput, CustomSelect } from "../components";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { IVehicle } from "../common";
 import { BrandsList, CarsModelList } from "../mocks";
 import { CheckCircleOutline } from "@mui/icons-material";
@@ -89,8 +89,6 @@ export const VehicleRegister = () => {
       inputElement.focus();
     }
   };
-
-  const isSmDown = useMediaQuery("(max-width:600px)");
 
   const startWebScrappingRequest = useCallback(() => {
     setIsLoading(true);
@@ -306,7 +304,6 @@ export const VehicleRegister = () => {
             <CustomInput
               label="Precio"
               id={priceRef}
-              type="number"
               onChange={(ev) =>
                 setRegisterForm({
                   ...registerForm,

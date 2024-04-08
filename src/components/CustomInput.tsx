@@ -1,12 +1,5 @@
-import {
-  TextField,
-  InputAdornment,
-  Tooltip,
-  InputProps,
-  Box,
-} from "@mui/material";
+import { TextField, InputAdornment, Tooltip, InputProps } from "@mui/material";
 import { Help, HourglassBottom } from "@mui/icons-material";
-import { Ref } from "react";
 
 interface CustomInputProps extends InputProps {
   label: string;
@@ -17,9 +10,6 @@ interface CustomInputProps extends InputProps {
   showIcon?: boolean;
   isLoading?: boolean;
 }
-
-const spinAnimation =
-  "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }";
 
 export const CustomInput = ({
   label,

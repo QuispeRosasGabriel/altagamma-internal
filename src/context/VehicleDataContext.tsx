@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 import { IVehicle } from "../common";
 
 const defaultValue: {
@@ -12,7 +12,6 @@ const defaultValue: {
 export const VehicleDataContext = createContext(defaultValue);
 
 export const VehicleDataProvider = ({ children }: { children: ReactNode }) => {
-  // const dataFromStorage = localStorage.getItem("CARS_LIST") ?? "{}";
   const [carsData, setCarsData] = useState<Array<IVehicle>>([]);
 
   return (

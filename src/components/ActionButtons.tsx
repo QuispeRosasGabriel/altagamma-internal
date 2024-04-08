@@ -5,12 +5,14 @@ interface ActionButtonsProps {
   onClean: () => void;
   onSave: () => void;
   disabledSave?: boolean;
+  mainActionText?: string;
 }
 
 export const ActionButtons = ({
   onClean,
   onSave,
   disabledSave,
+  mainActionText = "Guardar",
 }: ActionButtonsProps) => {
   return (
     <Box
@@ -64,7 +66,7 @@ export const ActionButtons = ({
         onClick={() => onSave()}
         disabled={disabledSave}
       >
-        Guardar
+        {mainActionText}
       </Button>
     </Box>
   );
