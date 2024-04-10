@@ -18,36 +18,37 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { IVehicle } from "../common";
 import { brandConversor } from "../mocks";
+import { useNavigate } from "react-router-dom";
 
-function createData(
-  id: number,
-  brand: string,
-  model: string,
-  km: number | null,
-  price: number | null,
-  year: number,
-  concession: string
-): Omit<IVehicle, "year"> & {
-  year: number;
-} {
-  return {
-    id,
-    brand,
-    model,
-    km,
-    price,
-    year,
-    concession,
-  };
-}
+// function createData(
+//   id: number,
+//   brand: string,
+//   model: string,
+//   km: number,
+//   price: number,
+//   year: number,
+//   concession: string
+// ): Omit<IVehicle, "year"> & {
+//   year: number;
+// } {
+//   return {
+//     id,
+//     brand,
+//     model,
+//     km,
+//     price,
+//     year,
+//     concession,
+//   };
+// }
 
-const rows = [
-  createData(1, "Bmw", "X1", 12000, 30000, 2020, "Si"),
-  createData(2, "Bmw", "X2", 14000, 34000, 2021, "No"),
-  createData(3, "Bmw", "X3", 13000, 32000, 2022, "No"),
-  createData(4, "Bmw", "X2", 11000, 31000, 2020, "No"),
-  createData(5, "Mercedes", "CLA", 10000, 36000, 2024, "No"),
-];
+// const rows = [
+//   createData(1, "Bmw", "X1", 12000, 30000, 2020, "Si"),
+//   createData(2, "Bmw", "X2", 14000, 34000, 2021, "No"),
+//   createData(3, "Bmw", "X3", 13000, 32000, 2022, "No"),
+//   createData(4, "Bmw", "X2", 11000, 31000, 2020, "No"),
+//   createData(5, "Mercedes", "CLA", 10000, 36000, 2024, "No"),
+// ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -258,6 +259,7 @@ export const EnhancedTable = ({
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const navigate = useNavigate();
 
   const handleRequestSort = (property: keyof IVehicle) => {
     const isAsc = orderBy === property && order === "asc";
@@ -268,26 +270,27 @@ export const EnhancedTable = ({
       carsListData as any,
       getComparator(isAsc ? "desc" : "asc", property)
     ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    console.log({ page, rowsPerPage, carsListData });
     setCarsListData(data as any);
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
+    navigate(`/car/${id}`);
+    // const selectedIndex = selected.indexOf(id);
+    // let newSelected: readonly number[] = [];
+    // if (selectedIndex === -1) {
+    //   newSelected = newSelected.concat(selected, id);
+    // } else if (selectedIndex === 0) {
+    //   newSelected = newSelected.concat(selected.slice(1));
+    // } else if (selectedIndex === selected.length - 1) {
+    //   newSelected = newSelected.concat(selected.slice(0, -1));
+    // } else if (selectedIndex > 0) {
+    //   newSelected = newSelected.concat(
+    //     selected.slice(0, selectedIndex),
+    //     selected.slice(selectedIndex + 1)
+    //   );
+    // }
+    // setSelected(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -337,7 +340,7 @@ export const EnhancedTable = ({
                 order={order}
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
-                rowCount={rows.length}
+                rowCount={carsListData.length}
               />
               <TableBody sx={{}}>
                 {carsListData.map((row, index) => {
@@ -450,7 +453,7 @@ export const EnhancedTable = ({
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={rows.length}
+            count={carsListData.length}
             rowsPerPage={rowsPerPage}
             labelRowsPerPage={"Resultados Por Pagina"}
             sx={{

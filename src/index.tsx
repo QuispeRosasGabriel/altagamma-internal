@@ -1,10 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { CommandCenter, Login, VehicleRegister } from "./pages";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import {
+  CommandCenter,
+  Login,
+  VehicleRegister,
+  VehicleDetail,
+  VehicleSearch,
+} from "./pages";
 import "./index.css";
-import { VehicleSearch } from "./pages/VehicleSearch";
 import { VehicleDataProvider } from "./context";
 
 const router = createBrowserRouter([
@@ -23,6 +32,14 @@ const router = createBrowserRouter([
   {
     path: "/search-vehicle",
     element: <VehicleSearch />,
+  },
+  {
+    path: "/car/:id",
+    element: <VehicleDetail />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 

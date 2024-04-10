@@ -4,8 +4,8 @@ export interface IVehicle {
   id: number;
   brand: string;
   model: string;
-  price: number | null;
-  km: number | null;
+  price?: number;
+  km?: number;
   year: Dayjs;
   concession: string;
 }

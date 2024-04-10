@@ -21,17 +21,17 @@ export const CommandCenter = () => {
       icon: <AppRegistration />,
     },
     {
-      name: "Balance Financiero",
-      path: "/finance-balance",
-      icon: <AttachMoney />,
+      name: "Busqueda",
+      path: "/search-vehicle",
+      icon: <Search />,
     },
   ];
 
   const adminActions = [
     {
-      name: "Busqueda",
-      path: "/search-vehicle",
-      icon: <Search />,
+      name: "Balance Financiero",
+      path: "/finance-balance",
+      icon: <AttachMoney />,
     },
     {
       name: "Ajustes",

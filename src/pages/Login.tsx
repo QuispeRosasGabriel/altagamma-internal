@@ -84,6 +84,7 @@ export const Login = () => {
           <CustomInput
             label="Usuario"
             name="email"
+            autoComplete="off"
             value={loginForm.email}
             onChange={(ev) =>
               setLoginForm({ ...loginForm, [ev.target.name]: ev.target.value })
@@ -92,6 +93,8 @@ export const Login = () => {
           <CustomInput
             label="Contrasena"
             name="password"
+            autoComplete="off"
+            type="password"
             value={loginForm.password}
             onChange={(ev) =>
               setLoginForm({ ...loginForm, [ev.target.name]: ev.target.value })

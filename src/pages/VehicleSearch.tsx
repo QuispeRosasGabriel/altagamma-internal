@@ -17,8 +17,8 @@ export const VehicleSearch = () => {
     id: 0,
     brand: "",
     model: "",
-    km: null,
-    price: null,
+    km: undefined,
+    price: undefined,
     year: dayjs(new Date().getFullYear().toString()),
     concession: "",
   });
@@ -178,15 +178,14 @@ export const VehicleSearch = () => {
               <Grid xs={12} sm={12} md={6} my={2} px={2}>
                 <CustomInput label="Precio" onChange={() => {}} />
               </Grid>
-              <Grid sm={12} md={6} p={1}>
-                {/* <CustomInput label="Precio" onChange={() => {}} /> */}
-              </Grid>
+              <Grid sm={12} md={6} p={1}></Grid>
             </Grid>
           </Box>
           <Box mb={2}>
             <ActionButtons
               onClean={() => setCarsListData(carsDataFromStorage)}
               mainActionText="Filtrar"
+              disabledCancel
               onSave={() => handleFilter()}
             />
           </Box>

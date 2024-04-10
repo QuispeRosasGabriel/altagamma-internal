@@ -11,15 +11,15 @@ import { CheckCircleOutline } from "@mui/icons-material";
 const sugerenciesMockList = {
   bmw: [
     {
-      value: "$28.500",
+      value: "$25.900",
       id: 1,
     },
     {
-      value: "$30.000",
+      value: "$28.990",
       id: 2,
     },
     {
-      value: "$31.200",
+      value: "$30.200",
       id: 3,
     },
   ],
@@ -39,21 +39,21 @@ const sugerenciesMockList = {
   ],
   audi: [
     {
-      value: "$20.000",
+      value: "$16.500",
       id: 1,
     },
     {
-      value: "$19.900",
+      value: "$17.500",
       id: 3,
     },
     {
-      value: "$24.000",
+      value: "$19.800",
       id: 2,
     },
   ],
   noResults: [
     {
-      value: "Proximamente :)",
+      value: "Proximamente!",
       id: 1,
     },
   ],
@@ -64,8 +64,8 @@ export const VehicleRegister = () => {
     id: 0,
     brand: "",
     model: "",
-    km: null,
-    price: null,
+    km: undefined,
+    price: undefined,
     year: dayjs(new Date().getFullYear().toString()),
     concession: "",
   });
@@ -81,6 +81,21 @@ export const VehicleRegister = () => {
   >([]);
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
 
+  const validBmw =
+    registerForm.brand === "bmw" &&
+    registerForm.model === "x1" &&
+    new Date(registerForm.year as any).getFullYear() == 2019;
+
+  const validMercedes =
+    registerForm.brand === "mercedes-benz" &&
+    registerForm.model === "cla" &&
+    new Date(registerForm.year as any).getFullYear() == 2020;
+
+  const validAudi =
+    registerForm.brand === "audi" &&
+    registerForm.model === "a4" &&
+    new Date(registerForm.year as any).getFullYear() == 2014;
+
   const focusOnInput = () => {
     const inputElement = document.getElementById(
       priceRef
@@ -93,11 +108,11 @@ export const VehicleRegister = () => {
   const startWebScrappingRequest = useCallback(() => {
     setIsLoading(true);
     let getSugerenciesMockList = [] as Array<{ value: string; id: number }>;
-    if (registerForm.brand === "bmw") {
+    if (validBmw) {
       getSugerenciesMockList = sugerenciesMockList.bmw;
-    } else if (registerForm.brand === "mercedes-benz") {
+    } else if (validMercedes) {
       getSugerenciesMockList = sugerenciesMockList.mercedes;
-    } else if (registerForm.brand === "audi") {
+    } else if (validAudi) {
       getSugerenciesMockList = sugerenciesMockList.audi;
     } else {
       getSugerenciesMockList = sugerenciesMockList.noResults;
@@ -107,7 +122,7 @@ export const VehicleRegister = () => {
       setIsLoading(false);
       setSugerencies(getSugerenciesMockList);
     }, 1000);
-  }, [registerForm.brand]);
+  }, [registerForm.brand, validMercedes, validBmw, validAudi]);
 
   const handleSave = () => {
     if (
@@ -148,6 +163,8 @@ export const VehicleRegister = () => {
     }
   };
 
+  const isValidOption = validAudi || validBmw || validMercedes;
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       {registrationCompleted && (
@@ -176,6 +193,7 @@ export const VehicleRegister = () => {
           Vehiculo Registrado
         </Alert>
       )}
+
       <Box>
         <Typography
           variant="h5"
@@ -288,7 +306,6 @@ export const VehicleRegister = () => {
             />
           </Grid>
         </Grid>
-
         <Grid container px={2}>
           <Grid xs={12} sm={12} md={6} my={2} px={2}>
             <CustomSelect
@@ -326,41 +343,42 @@ export const VehicleRegister = () => {
               isLoading={isLoading}
               name="price"
               value={registerForm?.price}
-              showIcon={
-                !!registerForm.brand &&
-                !!registerForm.year &&
-                !!registerForm.model
-              }
+              showIcon={isValidOption}
               onIconClick={() => startWebScrappingRequest()}
             />
-            {!!sugerencies.length && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                {sugerencies.map((s, idx) => (
-                  <>
-                    <Typography
-                      sx={{
-                        color: "#fff",
-                        cursor: "pointer",
-                        "&:hover": {
-                          color: "#ff6900",
-                        },
-                      }}
-                      onClick={() => {
-                        console.log(s.value.replaceAll("$", ""));
-                        setRegisterForm({
-                          ...registerForm,
-                          price: s.value as any,
-                        });
-                        focusOnInput();
-                      }}
-                      key={s.id}
-                    >
-                      {s.value}
-                    </Typography>
-                  </>
-                ))}
-              </Box>
-            )}
+            {!!sugerencies.length &&
+              (!!validAudi || !!validBmw || !!validMercedes) && (
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  {sugerencies.map((s, idx) => (
+                    <>
+                      <Typography
+                        sx={{
+                          color: "#fff",
+                          cursor: "pointer",
+                          "&:hover": {
+                            color: "#ff6900",
+                          },
+                        }}
+                        onClick={() => {
+                          // setRegisterForm({
+                          //   ...registerForm,
+                          //   price: parseInt(
+                          //     s.value.split("$")[1].replace(".", ""),
+                          //     10
+                          //   ),
+                          // });
+                          focusOnInput();
+                        }}
+                        key={s.id}
+                      >
+                        {s.value}
+                      </Typography>
+                    </>
+                  ))}
+                </Box>
+              )}
           </Grid>
         </Grid>
       </Box>
@@ -370,12 +388,19 @@ export const VehicleRegister = () => {
             setRegisterForm({
               brand: "",
               concession: "",
-              km: "0" as any,
+              km: Number(""),
               model: "",
               id: 0,
               year: dayjs(new Date().getFullYear().toString()),
-              price: "0" as any,
+              price: Number(""),
             })
+          }
+          disabledCancel={
+            !registerForm.brand ||
+            !registerForm.concession ||
+            !registerForm.price ||
+            !registerForm.km ||
+            !registerForm.year
           }
           disabledSave={
             !registerForm.brand ||

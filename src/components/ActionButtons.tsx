@@ -5,6 +5,7 @@ interface ActionButtonsProps {
   onClean: () => void;
   onSave: () => void;
   disabledSave?: boolean;
+  disabledCancel?: boolean;
   mainActionText?: string;
 }
 
@@ -12,6 +13,7 @@ export const ActionButtons = ({
   onClean,
   onSave,
   disabledSave,
+  disabledCancel,
   mainActionText = "Guardar",
 }: ActionButtonsProps) => {
   return (
@@ -37,6 +39,7 @@ export const ActionButtons = ({
           },
         }}
         onClick={() => onClean()}
+        disabled={disabledCancel}
       >
         Limpiar
       </Button>
