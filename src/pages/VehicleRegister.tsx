@@ -25,29 +25,29 @@ const sugerenciesMockList = {
   ],
   mercedes: [
     {
-      value: "$29.300",
+      value: "$30.900",
       id: 1,
     },
     {
-      value: "$31.500",
+      value: "$33.500",
       id: 2,
     },
     {
-      value: "$34.000",
+      value: "$36.900",
       id: 3,
     },
   ],
   audi: [
     {
-      value: "$16.500",
+      value: "$12.490",
       id: 1,
     },
     {
-      value: "$17.500",
+      value: "$14.500",
       id: 3,
     },
     {
-      value: "$19.800",
+      value: "$15.800",
       id: 2,
     },
   ],

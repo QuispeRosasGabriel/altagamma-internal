@@ -8,7 +8,6 @@ import {
   AttachMoney,
 } from "@mui/icons-material";
 import logo from "../logo.png";
-import { useIsAdmin } from "../hooks";
 
 export const CommandCenter = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Alert, Box, Grid, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -23,6 +23,8 @@ export const VehicleSearch = () => {
     concession: "",
   });
 
+  const [showEmptyAlert, setShowEmptyAlert] = useState(false);
+
   const carsDataFromStorage = JSON.parse(
     localStorage.getItem("CARS_LIST") ?? "{}"
   );
@@ -37,29 +39,58 @@ export const VehicleSearch = () => {
   );
 
   const handleFilter = () => {
-    const filterCars = () => {
-      const filteredCars = carsListData.filter((car) => {
-        if (car.id === searchForm.id) return true;
+    if (!carsListData.length) {
+      setShowEmptyAlert(true);
+      setTimeout(() => {
+        setShowEmptyAlert(false);
+      }, 2000);
+      return;
+    }
 
-        return (
-          car.brand === searchForm.brand ||
-          car.model === searchForm.model ||
-          car.km === searchForm.km ||
-          car.year === searchForm.year ||
-          ((searchForm.price === null || car.price === searchForm.price) &&
-            car.year === searchForm.year &&
-            car.concession === searchForm.concession)
-        );
-      });
+    const filteredCars = carsListData.filter((car) => {
+      if (car.id === searchForm.id) return true;
 
-      return filteredCars;
-    };
+      return (
+        car.brand === searchForm.brand ||
+        car.model === searchForm.model ||
+        car.km === searchForm.km ||
+        car.year === searchForm.year ||
+        ((searchForm.price === null || car.price === searchForm.price) &&
+          car.year === searchForm.year &&
+          car.concession === searchForm.concession)
+      );
+    });
 
-    setCarsListData(filterCars());
+    setCarsListData(filteredCars);
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      {showEmptyAlert && (
+        <Alert
+          severity="error"
+          sx={{
+            position: "fixed",
+            top: "20px",
+            left: "20px",
+            opacity: 1,
+            transform: "translateX(0)",
+            animation: "fadeAndMoveIn 0.5s forwards",
+            "@keyframes fadeAndMoveIn": {
+              "0%": {
+                opacity: 0,
+                transform: "translateX(-100px)",
+              },
+              "100%": {
+                opacity: 1,
+                transform: "translateX(0)",
+              },
+            },
+          }}
+        >
+          Sin Vehiculos Registrados
+        </Alert>
+      )}
       <>
         <Box sx={{ padding: "0px 10px" }}>
           <Typography
@@ -189,12 +220,14 @@ export const VehicleSearch = () => {
               onSave={() => handleFilter()}
             />
           </Box>
-          <Box sx={{ px: 2, mt: 4 }}>
-            <EnhancedTable
-              carsListData={carsListData}
-              setCarsListData={setCarsListData}
-            />
-          </Box>
+          {!!carsListData.length && (
+            <Box sx={{ px: 2, mt: 4 }}>
+              <EnhancedTable
+                carsListData={carsListData}
+                setCarsListData={setCarsListData}
+              />
+            </Box>
+          )}
         </Box>
       </>
     </LocalizationProvider>

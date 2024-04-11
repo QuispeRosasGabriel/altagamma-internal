@@ -12,6 +12,8 @@ import {
   VehicleRegister,
   VehicleDetail,
   VehicleSearch,
+  Finance,
+  Settings,
 } from "./pages";
 import "./index.css";
 import { VehicleDataProvider } from "./context";
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
   {
     path: "/register-vehicle",
     element: <VehicleRegister />,
+  },
+  {
+    path: "/finance-balance",
+    element: <Finance />,
+  },
+  {
+    path: "/settings",
+    element: <Settings />,
   },
   {
     path: "/search-vehicle",

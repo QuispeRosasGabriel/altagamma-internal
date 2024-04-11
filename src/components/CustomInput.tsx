@@ -42,34 +42,34 @@ export const CustomInput = ({
           },
           "& .MuiFormLabel-root.Mui-focused": {
             color: "#FF472F",
-            background: "#000",
-          },
-          "& .MuiFormLabel-root.Mui-hover": {
-            color: "#FF472F",
-          },
-          "& .MuiFormLabel-root.Mui-disabled": {
-            color: "#fff",
           },
           "& .MuiOutlinedInput-root": {
             color: "#fff",
-            "&.Mui-disabled": {
-              border: "1px solid #FF472F",
-            },
-            "& fieldset": {
-              border: "1px solid #FF472F",
-            },
-            "&:hover fieldset": {
+            "& .MuiOutlinedInput-notchedOutline": {
               borderColor: "#FF472F",
             },
-            "&.Mui-focused fieldset": {
+            "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: "#FF472F",
             },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#FF472F",
+            },
+          },
+          "& input:valid": {
+            backgroundColor: "#000 !important",
+          },
+          "& input:invalid": {
+            backgroundColor: "#000 !important",
+          },
+          "& input:-webkit-autofill": {
+            WebkitBoxShadow: "0 0 0 1000px #000 inset",
+            WebkitTextFillColor: "#fff",
+          },
+          "& input::-webkit-input-placeholder": {
+            color: "#fff",
           },
         }}
         InputProps={{
-          inputProps: {
-            inputMode: "numeric", // Set input mode to 'numeric' to hide number arrows
-          },
           endAdornment: showIcon && (
             <InputAdornment position="end">
               <Tooltip title={"Ver sugerencias de precio"} placement="top">

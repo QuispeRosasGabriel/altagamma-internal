@@ -5,6 +5,7 @@ import { CustomInput } from "../components";
 import { useIsAdmin } from "../hooks";
 import logo from "../logo.png";
 import { ADMIN_ROLES, USER_ROLES } from "../mocks";
+import backgroundImg from "../background.jpg";
 
 export const Login = () => {
   const isSmDown = useMediaQuery("(max-width:600px)");
@@ -64,7 +65,15 @@ export const Login = () => {
           Credenciales Invalidas
         </Alert>
       )}
-      <Box sx={{ height: "100vh", textAlign: "center" }}>
+      <Box
+        sx={{
+          height: "100vh",
+          textAlign: "center",
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImg})`, // Add opacity using linear-gradient and rgba
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <img
           style={{
             margin: "20px 0",
@@ -85,6 +94,7 @@ export const Login = () => {
             label="Usuario"
             name="email"
             autoComplete="off"
+            type="text"
             value={loginForm.email}
             onChange={(ev) =>
               setLoginForm({ ...loginForm, [ev.target.name]: ev.target.value })

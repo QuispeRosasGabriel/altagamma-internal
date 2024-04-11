@@ -340,104 +340,105 @@ export const EnhancedTable = ({
                 order={order}
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
-                rowCount={carsListData.length}
+                rowCount={carsListData?.length}
               />
               <TableBody sx={{}}>
-                {carsListData.map((row, index) => {
-                  const isItemSelected = isSelected(Number(row.id));
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                {carsListData.length &&
+                  carsListData?.map((row, index) => {
+                    const isItemSelected = isSelected(Number(row.id));
+                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, Number(row.id))}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "#FF472F",
-                          ".MuiTableCell-root": {
-                            borderColor: "#FF472F",
-                            background: "#FF472F",
-                            color: "#fff",
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, Number(row.id))}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                        sx={{
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "#FF472F",
+                            ".MuiTableCell-root": {
+                              borderColor: "#FF472F",
+                              background: "#FF472F",
+                              color: "#fff",
+                            },
                           },
-                        },
-                        "&.Mui-selected": {
-                          backgroundColor: "#FF472F",
-                          ".MuiTableCell-root": {
-                            borderColor: "#FF472F",
-                            color: "#fff",
+                          "&.Mui-selected": {
+                            backgroundColor: "#FF472F",
+                            ".MuiTableCell-root": {
+                              borderColor: "#FF472F",
+                              color: "#fff",
+                            },
                           },
-                        },
-                      }}
-                    >
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                          padding: "0 16px",
                         }}
                       >
-                        {brandConversor(row.brand as string)}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                        }}
-                      >
-                        {row.model.toString().toUpperCase()}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                        }}
-                      >
-                        {row.price?.toString().includes("$") ? "" : "$"}
-                        {row.price}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                          textAlign: "right",
-                        }}
-                      >
-                        {row.km}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                        }}
-                      >
-                        {row.year.toString().split("-")[0]}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          cursor: "pointer",
-                          color: "#fff",
-                        }}
-                      >
-                        {row.concession === "0" ? "Si" : "No"}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                            padding: "0 16px",
+                          }}
+                        >
+                          {brandConversor(row.brand as string)}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                          }}
+                        >
+                          {row.model.toString().toUpperCase()}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                          }}
+                        >
+                          {row.price?.toString().includes("$") ? "" : "$"}
+                          {row.price}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                            textAlign: "right",
+                          }}
+                        >
+                          {row.km}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                          }}
+                        >
+                          {row.year.toString().split("-")[0]}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            cursor: "pointer",
+                            color: "#fff",
+                          }}
+                        >
+                          {row.concession === "0" ? "Si" : "No"}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 {emptyRows > 0 && (
                   <TableRow
                     style={{
@@ -453,7 +454,7 @@ export const EnhancedTable = ({
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={carsListData.length}
+            count={carsListData.length ?? 5}
             rowsPerPage={rowsPerPage}
             labelRowsPerPage={"Resultados Por Pagina"}
             sx={{

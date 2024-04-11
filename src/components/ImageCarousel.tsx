@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -19,6 +19,10 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
     setActiveStep(
       (prevActiveStep) => (prevActiveStep - 1 + maxSteps) % maxSteps
     );
+  };
+
+  const handleStepChange = (step: number) => {
+    setActiveStep(step);
   };
 
   return (
@@ -42,7 +46,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
             left: 0,
             top: "50%",
             transform: "translateY(-50%)",
-            zIndex: 1,
+            zIndex: 2, // Ensure arrows are above the dots
             color: "#fff",
           }}
           size="large"
@@ -64,13 +68,43 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
             right: 0,
             top: "50%",
             transform: "translateY(-50%)",
-            zIndex: 1,
+            zIndex: 2, // Ensure arrows are above the dots
             color: "#fff",
           }}
           size="large"
         >
           <ArrowForwardIosIcon />
         </IconButton>
+
+        {/* Dot indicators */}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 20, // Position at the bottom of the image container
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {/* {images.map((_, index) => (
+            <Box
+              key={index}
+              onClick={() => handleStepChange(index)}
+              sx={{
+                // width: 8,
+                height: 8,
+                mx: 0.5,
+                borderRadius: "50%",
+                backgroundColor: activeStep === index ? "#FF472F" : "grey.800",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#FF472F",
+                },
+                transition: "background-color 0.3s",
+              }}
+            />
+          ))} */}
+        </Box>
       </Box>
     </Box>
   );
